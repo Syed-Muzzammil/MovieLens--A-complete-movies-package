@@ -10,7 +10,7 @@ const app = express();
 const ADMIN_USERNAME = 'admin';
 const ADMIN_PASSWORD = 'password123';
 
-const uri = "mongodb+srv://thiruhabinash:Yadav100@movielens.yc209.mongodb.net/?retryWrites=true&w=majority&appName=movielens";
+const uri = process.env.MONGO_URI || "mongodb+srv://admin:admin123@movielens.yc209.mongodb.net/?retryWrites=true&w=majority&appName=movielens";
 let db;
 
 async function startServer() {
@@ -20,8 +20,9 @@ async function startServer() {
         db = client.db('movielens');
         console.log("Connected to MongoDB Atlas");
 
-        app.listen(3000, () => {
-            console.log('Server is running on port 3000');
+        const PORT = process.env.PORT || 4000;
+        app.listen(PORT, () => {
+            console.log(`Server is running on port ${PORT}`);
         });
     } catch (err) {
         console.error("Failed to connect to MongoDB:", err);
@@ -99,7 +100,6 @@ app.get('/', checkAdmin, async (req, res) => {
     }
 });
 
-// Search Route
 app.get('/search', checkAdmin, async (req, res) => {
     const query = req.query.query ? req.query.query.toLowerCase() : '';
     try {
@@ -107,7 +107,7 @@ app.get('/search', checkAdmin, async (req, res) => {
             $or: [
                 { title: { $regex: query, $options: 'i' } },
                 { actors: { $regex: query, $options: 'i' } },
-                { genre: { $elemMatch: { $regex: query, $options: 'i' } } } // Search inside genre array
+                { genre: { $elemMatch: { $regex: query, $options: 'i' } } }
             ]
         }).toArray();
 
@@ -138,105 +138,4 @@ app.get('/logout', (req, res) => {
         if (err) return res.redirect('/');
         res.redirect('/');
     });
-});
-
-app.get('/addMovie', checkAdmin, (req, res) => {
-    if (!req.isAdmin) return res.redirect('/');
-    res.render('addMovie');
-});
-
-app.post('/addMovie', upload.single('poster'), checkAdmin, async (req, res) => {
-    if (!req.isAdmin) return res.redirect('/');
-
-    const { title, description, genre, trailer, actors } = req.body;
-    const poster = '/images/' + req.file.filename;
-
-    let genres = genre ? genre.split(',').map(g => g.trim()).filter(Boolean) : ['Uncategorized'];
-    let actorsList = actors ? actors.split(',').map(a => a.trim()).filter(Boolean) : ['Uncategorized'];
-
-    const newMovie = {
-        title,
-        description,
-        genre: genres,
-        poster,
-        trailer,
-        actors: actorsList,
-        reviews: [],
-        ratings: [],
-        averageRating: 0
-    };
-
-    try {
-        await db.collection('movies').insertOne(newMovie);
-        res.redirect('/');
-    } catch (err) {
-        console.error('Error adding movie:', err);
-        res.status(500).send('Failed to add movie.');
-    }
-});
-
-app.post('/deleteMovie/:id', async (req, res) => {
-    const movieId = req.params.id;
-
-    try {
-        const result = await db.collection('movies').deleteOne({ _id: new ObjectId(movieId) });
-        if (result.deletedCount === 1) {
-            console.log('Movie deleted successfully');
-        } else {
-            console.log('No movie found to delete');
-        }
-        res.redirect('/');
-    } catch (err) {
-        console.error('Error deleting movie:', err);
-        res.redirect('/');
-    }
-});
-
-app.get('/viewDetails/:id', checkAdmin, async (req, res) => {
-    const movieId = req.params.id;
-
-    try {
-        const movie = await db.collection('movies').findOne({ _id: new ObjectId(movieId) });
-        if (movie) {
-            res.render('viewDetails', { movie, isAdmin: req.isAdmin });
-        } else {
-            res.redirect('/');
-        }
-    } catch (err) {
-        console.error('Error fetching movie details:', err);
-        res.redirect('/');
-    }
-});
-
-app.post('/addReview/:id', async (req, res) => {
-    const { reviewText, username, rating } = req.body;
-    const movieId = req.params.id;
-
-    try {
-        const movie = await db.collection('movies').findOne({ _id: new ObjectId(movieId) });
-        if (movie) {
-            const newReview = { user: username, text: reviewText };
-            const newRating = parseInt(rating);
-
-            movie.reviews.push(newReview);
-            movie.ratings.push(newRating);
-            movie.averageRating = calculateAverageRating(movie);
-
-            await db.collection('movies').updateOne(
-                { _id: new ObjectId(movieId) },
-                { $set: { reviews: movie.reviews, ratings: movie.ratings, averageRating: movie.averageRating } }
-            );
-            res.redirect(`/viewDetails/${movieId}`);
-        } else {
-            res.redirect('/');
-        }
-    } catch (err) {
-        console.error('Error adding review:', err);
-        res.status(500).send('Failed to add review.');
-    }
-});
-
-const PORT = process.env.PORT || 4000; 
-app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
 });
