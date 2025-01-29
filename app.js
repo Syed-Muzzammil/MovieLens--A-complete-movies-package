@@ -20,7 +20,7 @@ async function startServer() {
         db = client.db('movielens');
         console.log("Connected to MongoDB Atlas");
 
-        const PORT = process.env.PORT || 4000;
+        const PORT = process.env.PORT || 10000;
         app.listen(PORT, () => {
             console.log(`Server is running on port ${PORT}`);
         });
