@@ -1,0 +1,127 @@
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background-color: #141414;
+    color: #fff;
+}
+
+header {
+    padding: 20px;
+    text-align: center;
+    background-color: #1e1e1e;
+}
+
+header h1 {
+    font-size: 28px;
+    color: #e50914;
+    margin: 0;
+}
+
+main {
+    max-width: 600px;
+    margin: 30px auto;
+    background-color: #222;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group label {
+    font-size: 16px;
+    color: #bbb;
+    margin-bottom: 5px;
+}
+
+.form-group input,
+.form-group textarea {
+    padding: 10px;
+    font-size: 16px;
+    background-color: #333;
+    border: none;
+    border-radius: 5px;
+    color: #fff;
+}
+
+.form-group textarea {
+    resize: vertical;
+    height: 120px;
+}
+
+.form-group input[type="file"] {
+    font-size: 14px;
+}
+
+.submit-btn {
+    background-color: #e50914;
+    color: white;
+    padding: 10px 20px;
+    font-size: 16px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.submit-btn:hover {
+    background-color: #b20610;
+}
+
+.back-home {
+    display: block;
+    margin-top: 20px;
+    text-align: center;
+    color: #e50914;
+    text-decoration: none;
+    font-size: 16px;
+}
+
+.back-home:hover {
+    text-decoration: underline;
+}
+
+@media (max-width: 768px) {
+    main {
+        padding: 15px;
+    }
+
+    .form-group input,
+    .form-group textarea {
+        font-size: 14px;
+    }
+
+    .submit-btn {
+        font-size: 14px;
+        padding: 8px 16px;
+    }
+}
+
+@media (max-width: 480px) {
+    header h1 {
+        font-size: 24px;
+    }
+
+    .form-group label {
+        font-size: 14px;
+    }
+
+    .form-group input,
+    .form-group textarea {
+        font-size: 14px;
+    }
+
+    .submit-btn {
+        font-size: 14px;
+        padding: 8px 16px;
+    }
+}

@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MovieLens</title>
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+    <header>
+        <h1>MovieLens</h1>
+        <div class="search-container">
+            <form action="/search" method="GET">
+                <input type="text" name="query" id="search-bar" placeholder="Search for movies, genre or actors..." required>
+                <button type="submit">Search</button>
+            </form>
+            <% if (isAdmin) { %>
+                <a href="/addMovie"><button>Add Movie</button></a>
+            <% } %>
+        </div>
+    </header>
+
+    <!-- Movies Section Grouped by Genre -->
+    <section class="all-movies-section">
+        <h2>All Movies</h2>
+        <div id="movies-container" class="movies-container">
+            <% let genreIndex = 0; %>
+            <% for (const genre in groupedMovies) { %>
+                <div class="genre-row">
+                    <h3 class="genre-title"><%= genre %></h3>
+                    <div class="movie-list">
+                        <% groupedMovies[genre].forEach(function(movie) { %>
+                            <div class="movie-card" data-title="<%= movie.title %>" data-genre="<%= movie.genre.join(', ').toLowerCase() %>" data-actors="<%= movie.actors.join(', ').toLowerCase() %>">
+                                <% if (movie.posterPath) { %>
+                                    <img src="<%= movie.poster %>" alt="<%= movie.title %>" style="width: 100%; max-width: 300px;">
+                                <% } else { %>
+                                    <div class="no-image">No Image is Available</div>
+                                <% } %>
+                                
+                                <h3><%= movie.title %></h3>
+                                <p><%= movie.description %></p>
+                                <a href="/viewDetails/<%= movie._id %>">
+                                    <button>View Details</button>
+                                </a>
+                                <% if (isAdmin) { %>
+                                    <form action="/deleteMovie/<%= movie._id %>" method="POST">
+                                        <button type="submit">Delete Movie</button>
+                                    </form>
+                                <% } %>
+                            </div>
+                        <% }); %>
+                    </div>
+                </div>
+                <% genreIndex++; %>
+            <% } %>
+        </div>
+    </section>
+
+    <script>
+        // Search functionality for title, genre, and actors
+        const searchForm = document.querySelector('form');
+        searchForm.addEventListener('submit', function(event) {
+            const searchQuery = document.getElementById('search-bar').value.toLowerCase();
+            const movieCards = document.querySelectorAll('.movie-card');
+            
+            movieCards.forEach(function(card) {
+                const title = card.dataset.title.toLowerCase();
+                const genre = card.dataset.genre.toLowerCase();
+                const actors = card.dataset.actors.toLowerCase();
+                
+                if (title.includes(searchQuery) || genre.includes(searchQuery) || actors.includes(searchQuery)) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+            
+            event.preventDefault(); // Prevent the form from submitting the default way
+        });
+    </script>
+</body>
+</html>

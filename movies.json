@@ -1,0 +1,24 @@
+[
+  {
+    "title": "MESSI",
+    "description": "GOAT",
+    "genre": "SPORTS",
+    "poster": "/images/1733759438914.jpg",
+    "trailer": "https://www.youtube.com/embed/Ht1wQJTpNAA",
+    "reviews": [
+      {
+        "user": "khader",
+        "text": "PERFECT!"
+      },
+      {
+        "user": "asrar",
+        "text": "AS A RONALDO FAN, I AM SAYING MESSI IS THE GOAT!"
+      }
+    ],
+    "ratings": [
+      5,
+      5
+    ],
+    "averageRating": "5.0"
+  }
+]
